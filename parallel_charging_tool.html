@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -357,52 +356,49 @@
             color: #999;
             font-size: 13px;
         }
-
-```
-    @media (max-width: 768px) {
-        .container {
-            padding: 15px;
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            .logo-section {
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 15px;
+                padding-bottom: 15px;
+                border-bottom: 3px solid #ddd;
+                margin-bottom: 15px;
+            }
+            .logo-section img {
+                max-width: 120px;
+            }
+            .title-section {
+                width: 100%;
+            }
+            .title-section h1 {
+                text-align: center;
+                margin: 0;
+            }
+            .info-box {
+                margin-top: 0;
+                margin-bottom: 20px;
+            }
+            .settings-grid {
+                grid-template-columns: 1fr;
+                padding: 15px;
+            }
+            .packs-input-grid {
+                grid-template-columns: 1fr;
+            }
+            .charging-groups {
+                grid-template-columns: 1fr;
+            }
+            .legend {
+                grid-template-columns: 1fr;
+            }
         }
-        .logo-section {
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid #ddd;
-            margin-bottom: 15px;
-        }
-        .logo-section img {
-            max-width: 120px;
-        }
-        .title-section {
-            width: 100%;
-        }
-        .title-section h1 {
-            text-align: center;
-            margin: 0;
-        }
-        .info-box {
-            margin-top: 0;
-            margin-bottom: 20px;
-        }
-        .settings-grid {
-            grid-template-columns: 1fr;
-            padding: 15px;
-        }
-        .packs-input-grid {
-            grid-template-columns: 1fr;
-        }
-        .charging-groups {
-            grid-template-columns: 1fr;
-        }
-        .legend {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>
-```
-
+    </style>
 </head>
 <body>
     <div class="container">
@@ -416,304 +412,298 @@
             <strong>How it works:</strong> Enter your cell count, add pack voltages, set your parallel charging board capacity, and get optimal charging groups based on voltage compatibility.
         </div>
 
-```
-    <div class="settings-grid">
-        <div class="setting-group">
-            <label for="cellCount">Cell Count (S)</label>
-            <select id="cellCount">
-                <option value="2" selected>2S</option>
-                <option value="3">3S</option>
-                <option value="4">4S</option>
-                <option value="5">5S</option>
-                <option value="6">6S</option>
-                <option value="8">8S</option>
-            </select>
-        </div>
+        <div class="settings-grid">
+            <div class="setting-group">
+                <label for="cellCount">Cell Count (S)</label>
+                <select id="cellCount">
+                    <option value="2" selected>2S</option>
+                    <option value="3">3S</option>
+                    <option value="4">4S</option>
+                    <option value="5">5S</option>
+                    <option value="6">6S</option>
+                    <option value="8">8S</option>
+                </select>
+            </div>
 
-        <div class="setting-group">
-            <div class="checkbox-group">
-                <input type="checkbox" id="isHV" onchange="updateMaxVoltage()">
-                <label for="isHV">High Voltage (LiHV) - 4.35V/cell max</label>
+            <div class="setting-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="isHV" onchange="updateMaxVoltage()">
+                    <label for="isHV">High Voltage (LiHV) - 4.35V/cell max</label>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <label for="maxPacks">Max Packs to Charge Together</label>
+                <div class="slider-container">
+                    <input type="range" id="maxPacks" min="2" max="10" value="4">
+                    <span class="slider-value" id="maxPacksValue">4</span>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <label id="maxDeltaLabel">Max Allowed Voltage Delta: 0.2V</label>
+                <p style="font-size: 12px; color: #999; margin-top: 5px;">Calculated as 0.1V × cell count</p>
             </div>
         </div>
 
-        <div class="setting-group">
-            <label for="maxPacks">Max Packs to Charge Together</label>
-            <div class="slider-container">
-                <input type="range" id="maxPacks" min="2" max="10" value="4">
-                <span class="slider-value" id="maxPacksValue">4</span>
+        <div class="packs-section">
+            <div class="packs-header">
+                <h2>Battery Packs</h2>
+                <button onclick="addPackInput()">+ Add Pack</button>
+            </div>
+
+            <div id="packsContainer" class="packs-input-grid"></div>
+
+            <div id="errorMessage"></div>
+        </div>
+
+        <button onclick="calculateGroups()" style="width: 100%; padding: 15px; font-size: 16px; margin-bottom: 20px;">Calculate Charging Groups</button>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #d4edda;"></div>
+                <span>Safe to Charge</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #e2e3e5;"></div>
+                <span>At Storage Voltage</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #cfe2ff;"></div>
+                <span>Full - Do Not Charge</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #fff3cd;"></div>
+                <span>Over-discharged but Safe</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #f8d7da;"></div>
+                <span>Damaged - Do Not Charge</span>
             </div>
         </div>
 
-        <div class="setting-group">
-            <label id="maxDeltaLabel">Max Allowed Voltage Delta: 0.2V</label>
-            <p style="font-size: 12px; color: #999; margin-top: 5px;">Calculated as 0.1V × cell count</p>
+        <div class="alerts-section" id="alertsSection" style="display: none;">
+            <h3>⚠️ Battery Status Alerts</h3>
+            <div class="alert-list" id="alertsList"></div>
+        </div>
+
+        <div class="results-section">
+            <h2>Recommended Charging Groups</h2>
+            <div id="resultsContainer" class="empty-message">
+                Add packs and click "Calculate Charging Groups" to see results
+            </div>
+        </div>
+
+        <div class="footer">
+            © 2025 BluebackFPV. All rights reserved.
         </div>
     </div>
 
-    <div class="packs-section">
-        <div class="packs-header">
-            <h2>Battery Packs</h2>
-            <button onclick="addPackInput()">+ Add Pack</button>
-        </div>
+    <script>
+        let packCount = 3;
+        let cellCount = 2;
+        let isHV = false;
 
-        <div id="packsContainer" class="packs-input-grid"></div>
-
-        <div id="errorMessage"></div>
-    </div>
-
-    <button onclick="calculateGroups()" style="width: 100%; padding: 15px; font-size: 16px; margin-bottom: 20px;">Calculate Charging Groups</button>
-
-    <div class="legend">
-        <div class="legend-item">
-            <div class="legend-color" style="background-color: #d4edda;"></div>
-            <span>Safe to Charge</span>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background-color: #e2e3e5;"></div>
-            <span>At Storage Voltage</span>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background-color: #cfe2ff;"></div>
-            <span>Full - Do Not Charge</span>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background-color: #fff3cd;"></div>
-            <span>Over-discharged but Safe</span>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background-color: #f8d7da;"></div>
-            <span>Damaged - Do Not Charge</span>
-        </div>
-    </div>
-
-    <div class="alerts-section" id="alertsSection" style="display: none;">
-        <h3>⚠️ Battery Status Alerts</h3>
-        <div class="alert-list" id="alertsList"></div>
-    </div>
-
-    <div class="results-section">
-        <h2>Recommended Charging Groups</h2>
-        <div id="resultsContainer" class="empty-message">
-            Add packs and click "Calculate Charging Groups" to see results
-        </div>
-    </div>
-
-    <div class="footer">
-        © 2025 BluebackFPV. All rights reserved.
-    </div>
-</div>
-
-<script>
-    let packCount = 3;
-    let cellCount = 2;
-    let isHV = false;
-
-    function updateMaxVoltage() {
-        isHV = document.getElementById('isHV').checked;
-    }
-
-    function addPackInput() {
-        packCount++;
-        renderPackInputs();
-    }
-
-    function removePackInput(index) {
-        const container = document.getElementById('packsContainer');
-        const inputs = container.querySelectorAll('.pack-input');
-        if (inputs.length > 1) {
-            inputs[index].remove();
+        function updateMaxVoltage() {
+            isHV = document.getElementById('isHV').checked;
         }
-    }
 
-    function renderPackInputs() {
-        const container = document.getElementById('packsContainer');
-        const inputs = container.querySelectorAll('.pack-input');
-        
-        for (let i = inputs.length; i < packCount; i++) {
-            const packDiv = document.createElement('div');
-            packDiv.className = 'pack-input';
-            packDiv.innerHTML = `
-                <label>Pack ${i + 1} Voltage (V)</label>
-                <input type="number" class="pack-voltage" step="0.001" placeholder="0.000">
-                <button class="remove-btn" onclick="removePackInput(${i})">Remove</button>
-            `;
-            container.appendChild(packDiv);
+        function addPackInput() {
+            packCount++;
+            renderPackInputs();
         }
-    }
 
-    function getPackVoltages() {
-        const inputs = document.querySelectorAll('.pack-voltage');
-        const packs = [];
-        inputs.forEach((input, index) => {
-            const voltage = parseFloat(input.value);
-            if (!isNaN(voltage) && voltage > 0) {
-                packs.push({ id: index + 1, voltage: voltage });
+        function removePackInput(index) {
+            const container = document.getElementById('packsContainer');
+            const inputs = container.querySelectorAll('.pack-input');
+            if (inputs.length > 1) {
+                inputs[index].remove();
             }
-        });
-        return packs;
-    }
-
-    function getVoltageStatus(voltagePerCell) {
-        const fullVoltage = isHV ? 4.35 : 4.2;
-        const storageVoltage = 3.8;
-        
-        if (voltagePerCell > 4.3 && !isHV) {
-            return { status: 'danger', label: '🔥 OVERCHARGED - Dangerous' };
-        } else if (voltagePerCell > fullVoltage) {
-            return { status: 'danger', label: '🔥 OVERCHARGED - Dangerous' };
-        } else if (voltagePerCell >= fullVoltage - 0.05) {
-            return { status: 'full', label: '🔋 FULL - Do not charge' };
-        } else if (voltagePerCell >= storageVoltage) {
-            return { status: 'safe', label: '✓ Safe to Charge' };
-        } else if (voltagePerCell >= 3.3) {
-            return { status: 'safe', label: '✓ Safe to Charge' };
-        } else if (voltagePerCell >= 3.0) {
-            return { status: 'warning', label: '⚠️ Over-discharged but safe' };
-        } else {
-            return { status: 'danger', label: '🛑 Damaged - Do not charge' };
-        }
-    }
-
-    function calculateGroups() {
-        const errorDiv = document.getElementById('errorMessage');
-        const alertsDiv = document.getElementById('alertsSection');
-        const alertsList = document.getElementById('alertsList');
-        
-        errorDiv.innerHTML = '';
-        alertsDiv.style.display = 'none';
-        alertsList.innerHTML = '';
-
-        cellCount = parseInt(document.getElementById('cellCount').value);
-        const maxDelta = cellCount * 0.1;
-        const maxPacksPerGroup = parseInt(document.getElementById('maxPacks').value);
-        const packs = getPackVoltages();
-
-        if (packs.length === 0) {
-            errorDiv.innerHTML = '<div class="danger-box">Please add at least one pack with a voltage.</div>';
-            return;
         }
 
-        const packsWithStatus = packs.map(pack => {
-            const voltagePerCell = pack.voltage / cellCount;
-            const status = getVoltageStatus(voltagePerCell);
-            return { ...pack, voltagePerCell, ...status };
-        });
+        function renderPackInputs() {
+            const container = document.getElementById('packsContainer');
+            const inputs = container.querySelectorAll('.pack-input');
+            
+            for (let i = inputs.length; i < packCount; i++) {
+                const packDiv = document.createElement('div');
+                packDiv.className = 'pack-input';
+                const packNum = i + 1;
+                packDiv.innerHTML = '<label>Pack ' + packNum + ' Voltage (V)</label><input type="number" class="pack-voltage" step="0.001" placeholder="0.000"><button class="remove-btn" onclick="removePackInput(' + i + ')">Remove</button>';
+                container.appendChild(packDiv);
+            }
+        }
 
-        const alerts = packsWithStatus.filter(p => p.status !== 'safe');
-        if (alerts.length > 0) {
-            alertsDiv.style.display = 'block';
-            alerts.forEach(pack => {
-                const boxClass = pack.status === 'danger' ? 'danger-box' : 'warning-box';
-                alertsList.innerHTML += `
-                    <div class="${boxClass}">
-                        <strong>Pack ${pack.id}:</strong> ${pack.voltagePerCell.toFixed(3)}V/cell - ${pack.label}
-                    </div>
-                `;
+        function getPackVoltages() {
+            const inputs = document.querySelectorAll('.pack-voltage');
+            const packs = [];
+            inputs.forEach((input, index) => {
+                const voltage = parseFloat(input.value);
+                if (!isNaN(voltage) && voltage > 0) {
+                    packs.push({ id: index + 1, voltage: voltage });
+                }
             });
+            return packs;
         }
 
-        packsWithStatus.sort((a, b) => b.voltage - a.voltage);
+        function getVoltageStatus(voltagePerCell) {
+            const fullVoltage = isHV ? 4.35 : 4.2;
+            const storageVoltage = 3.8;
+            
+            if (voltagePerCell > 4.3 && !isHV) {
+                return { status: 'danger', label: '🔥 OVERCHARGED - Dangerous' };
+            } else if (voltagePerCell > fullVoltage) {
+                return { status: 'danger', label: '🔥 OVERCHARGED - Dangerous' };
+            } else if (voltagePerCell >= fullVoltage - 0.05) {
+                return { status: 'full', label: '🔋 FULL - Do not charge' };
+            } else if (voltagePerCell >= storageVoltage) {
+                return { status: 'safe', label: '✓ Safe to Charge' };
+            } else if (voltagePerCell >= 3.3) {
+                return { status: 'safe', label: '✓ Safe to Charge' };
+            } else if (voltagePerCell >= 3.0) {
+                return { status: 'warning', label: '⚠️ Over-discharged but safe' };
+            } else {
+                return { status: 'danger', label: '🛑 Damaged - Do not charge' };
+            }
+        }
 
-        const groups = [];
-        const usedPacks = new Set();
+        function calculateGroups() {
+            const errorDiv = document.getElementById('errorMessage');
+            const alertsDiv = document.getElementById('alertsSection');
+            const alertsList = document.getElementById('alertsList');
+            
+            errorDiv.innerHTML = '';
+            alertsDiv.style.display = 'none';
+            alertsList.innerHTML = '';
 
-        for (const pack of packsWithStatus) {
-            if (usedPacks.has(pack.id)) continue;
+            cellCount = parseInt(document.getElementById('cellCount').value);
+            const maxDelta = cellCount * 0.1;
+            const maxPacksPerGroup = parseInt(document.getElementById('maxPacks').value);
+            const packs = getPackVoltages();
 
-            let addedToGroup = false;
-            for (const group of groups) {
-                if (group.packs.length < maxPacksPerGroup) {
-                    const minVoltage = Math.min(...group.packs.map(p => p.voltage));
-                    const maxVoltage = Math.max(...group.packs.map(p => p.voltage));
-                    
-                    const newMin = Math.min(minVoltage, pack.voltage);
-                    const newMax = Math.max(maxVoltage, pack.voltage);
-                    
-                    if (newMax - newMin <= maxDelta) {
-                        group.packs.push(pack);
-                        usedPacks.add(pack.id);
-                        addedToGroup = true;
-                        break;
+            if (packs.length === 0) {
+                errorDiv.innerHTML = '<div class="danger-box">Please add at least one pack with a voltage.</div>';
+                return;
+            }
+
+            const packsWithStatus = packs.map(pack => {
+                const voltagePerCell = pack.voltage / cellCount;
+                const status = getVoltageStatus(voltagePerCell);
+                return { ...pack, voltagePerCell, ...status };
+            });
+
+            const alerts = packsWithStatus.filter(p => p.status !== 'safe');
+            if (alerts.length > 0) {
+                alertsDiv.style.display = 'block';
+                alerts.forEach(pack => {
+                    const boxClass = pack.status === 'danger' ? 'danger-box' : 'warning-box';
+                    alertsList.innerHTML += `
+                        <div class="${boxClass}">
+                            <strong>Pack ${pack.id}:</strong> ${pack.voltagePerCell.toFixed(3)}V/cell - ${pack.label}
+                        </div>
+                    `;
+                });
+            }
+
+            packsWithStatus.sort((a, b) => b.voltage - a.voltage);
+
+            const groups = [];
+            const usedPacks = new Set();
+
+            for (const pack of packsWithStatus) {
+                if (usedPacks.has(pack.id)) continue;
+
+                let addedToGroup = false;
+                for (const group of groups) {
+                    if (group.packs.length < maxPacksPerGroup) {
+                        const minVoltage = Math.min(...group.packs.map(p => p.voltage));
+                        const maxVoltage = Math.max(...group.packs.map(p => p.voltage));
+                        
+                        const newMin = Math.min(minVoltage, pack.voltage);
+                        const newMax = Math.max(maxVoltage, pack.voltage);
+                        
+                        if (newMax - newMin <= maxDelta) {
+                            group.packs.push(pack);
+                            usedPacks.add(pack.id);
+                            addedToGroup = true;
+                            break;
+                        }
                     }
+                }
+
+                if (!addedToGroup) {
+                    groups.push({ packs: [pack] });
+                    usedPacks.add(pack.id);
                 }
             }
 
-            if (!addedToGroup) {
-                groups.push({ packs: [pack] });
-                usedPacks.add(pack.id);
+            displayResults(groups, maxDelta);
+        }
+
+        function displayResults(groups, maxDelta) {
+            const container = document.getElementById('resultsContainer');
+            
+            if (groups.length === 0) {
+                container.innerHTML = '<div class="empty-message">No packs to display</div>';
+                return;
             }
-        }
 
-        displayResults(groups, maxDelta);
-    }
+            let html = '<div class="charging-groups">';
 
-    function displayResults(groups, maxDelta) {
-        const container = document.getElementById('resultsContainer');
-        
-        if (groups.length === 0) {
-            container.innerHTML = '<div class="empty-message">No packs to display</div>';
-            return;
-        }
+            groups.forEach((group, index) => {
+                const minVoltage = Math.min(...group.packs.map(p => p.voltage));
+                const maxVoltage = Math.max(...group.packs.map(p => p.voltage));
+                const deltaInGroup = (maxVoltage - minVoltage).toFixed(3);
+                const colorClass = `color-${index % 8}`;
 
-        let html = '<div class="charging-groups">';
-
-        groups.forEach((group, index) => {
-            const minVoltage = Math.min(...group.packs.map(p => p.voltage));
-            const maxVoltage = Math.max(...group.packs.map(p => p.voltage));
-            const deltaInGroup = (maxVoltage - minVoltage).toFixed(3);
-            const colorClass = `color-${index % 8}`;
-
-            html += `
-                <div class="group-card ${colorClass}">
-                    <h3>Charging Group ${index + 1}</h3>
-                    <ul class="group-packs">
-                        ${group.packs.map(pack => {
-                            const statusClass = pack.status === 'danger' ? 'status-danger' : 
-                                               pack.status === 'warning' ? 'status-warning' : 
-                                               pack.status === 'full' ? 'status-full' :
-                                               pack.status === 'storage' ? 'status-storage' :
-                                               'status-safe';
-                            return `
-                                <li>
-                                    Pack ${pack.id}: <strong>${pack.voltage.toFixed(3)}V</strong>
-                                    <div class="pack-status ${statusClass}">${pack.label}</div>
-                                </li>
-                            `;
-                        }).join('')}
-                    </ul>
-                    <div class="group-stats">
-                        <div>Count: ${group.packs.length} pack(s)</div>
-                        <div>Min: ${minVoltage.toFixed(3)}V (${(minVoltage / cellCount).toFixed(3)}V/cell)</div>
-                        <div>Max: ${maxVoltage.toFixed(3)}V (${(maxVoltage / cellCount).toFixed(3)}V/cell)</div>
-                        <div>Delta: ${deltaInGroup}V (Max: ${maxDelta.toFixed(1)}V)</div>
+                html += `
+                    <div class="group-card ${colorClass}">
+                        <h3>Charging Group ${index + 1}</h3>
+                        <ul class="group-packs">
+                            ${group.packs.map(pack => {
+                                const statusClass = pack.status === 'danger' ? 'status-danger' : 
+                                                   pack.status === 'warning' ? 'status-warning' : 
+                                                   pack.status === 'full' ? 'status-full' :
+                                                   pack.status === 'storage' ? 'status-storage' :
+                                                   'status-safe';
+                                return `
+                                    <li>
+                                        Pack ${pack.id}: <strong>${pack.voltage.toFixed(3)}V</strong>
+                                        <div class="pack-status ${statusClass}">${pack.label}</div>
+                                    </li>
+                                `;
+                            }).join('')}
+                        </ul>
+                        <div class="group-stats">
+                            <div>Count: ${group.packs.length} pack(s)</div>
+                            <div>Min: ${minVoltage.toFixed(3)}V (${(minVoltage / cellCount).toFixed(3)}V/cell)</div>
+                            <div>Max: ${maxVoltage.toFixed(3)}V (${(maxVoltage / cellCount).toFixed(3)}V/cell)</div>
+                            <div>Delta: ${deltaInGroup}V (Max: ${maxDelta.toFixed(1)}V)</div>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            cellCount = 2;
+            document.getElementById('maxDeltaLabel').textContent = `Max Allowed Voltage Delta: 0.2V`;
+            renderPackInputs();
         });
 
-        html += '</div>';
-        container.innerHTML = html;
-    }
+        document.getElementById('cellCount').addEventListener('change', () => {
+            cellCount = parseInt(document.getElementById('cellCount').value);
+            const maxDelta = (cellCount * 0.1).toFixed(1);
+            document.getElementById('maxDeltaLabel').textContent = `Max Allowed Voltage Delta: ${maxDelta}V`;
+        });
 
-    // Initialize on page load
-    window.addEventListener('DOMContentLoaded', () => {
-        cellCount = 2;
-        document.getElementById('maxDeltaLabel').textContent = `Max Allowed Voltage Delta: 0.2V`;
-        renderPackInputs();
-    });
-
-    document.getElementById('cellCount').addEventListener('change', () => {
-        cellCount = parseInt(document.getElementById('cellCount').value);
-        const maxDelta = (cellCount * 0.1).toFixed(1);
-        document.getElementById('maxDeltaLabel').textContent = `Max Allowed Voltage Delta: ${maxDelta}V`;
-    });
-
-    document.getElementById('maxPacks').addEventListener('input', (e) => {
-        document.getElementById('maxPacksValue').textContent = e.target.value;
-    });
-</script>
-```
-
+        document.getElementById('maxPacks').addEventListener('input', (e) => {
+            document.getElementById('maxPacksValue').textContent = e.target.value;
+        });
+    </script>
 </body>
 </html>
