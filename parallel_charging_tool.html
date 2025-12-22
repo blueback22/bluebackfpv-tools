@@ -730,12 +730,14 @@
                 
                 // Check if group has any problem packs
                 const hasProblems = group.packs.some(p => p.status !== 'safe');
-                let colorClass = 'color-0'; // red for problems
+                let colorClass;
                 
-                if (!hasProblems) {
+                if (hasProblems) {
+                    colorClass = 'color-0'; // red for problems
+                } else {
                     // Only use other colors if no problems
-                    const colorIndex = index % 7 + 1; // Use colors 1-7, skip 0 (red)
-                    colorClass = `color-${colorIndex}`;
+                    const nonProblemIndex = groups.filter((g, i) => i < index && !g.packs.some(p => p.status !== 'safe')).length;
+                    colorClass = `color-${(nonProblemIndex % 7) + 1}`; // Use colors 1-7, skip 0 (red)
                 }
 
                 html += `
