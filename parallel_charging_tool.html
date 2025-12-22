@@ -348,13 +348,86 @@
             height: 20px;
             border-radius: 4px;
         }
-        .footer {
-            text-align: center;
+        .shop-section {
             margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
-            color: #999;
-            font-size: 13px;
+            padding: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            color: white;
+        }
+        .shop-section h2 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        .shop-section h3 {
+            color: white;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .shop-section p {
+            margin-bottom: 15px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+        .shop-card {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .shop-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        .shop-card h4 {
+            color: #333;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .shop-card p {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+        .shop-card a {
+            display: inline-block;
+            background-color: #667eea;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 12px;
+            transition: background-color 0.3s;
+        }
+        .shop-card a:hover {
+            background-color: #5568d3;
+        }
+        
+        @media (max-width: 768px) {
+            .shop-section {
+                padding: 15px;
+                margin-top: 30px;
+            }
+            .shop-section h2 {
+                font-size: 18px;
+            }
+            .shop-section h3 {
+                font-size: 15px;
+            }
+            .shop-grid {
+                grid-template-columns: 1fr;
+            }
         }
         
         @media (max-width: 768px) {
@@ -491,6 +564,67 @@
             <h2>Recommended Charging Groups</h2>
             <div id="resultsContainer" class="empty-message">
                 Add packs and click "Calculate Charging Groups" to see results
+            </div>
+        </div>
+
+        <div class="shop-section">
+            <h2>🛒 BluebackFPV Gear Shop</h2>
+            <p>Support BluebackFPV while getting the equipment you need. All links are affiliate partnerships.</p>
+            
+            <h3>Where Do I Start?</h3>
+            <p>New to FPV? Start here with the essentials to get your first drone flying.</p>
+            <div class="shop-grid">
+                <div class="shop-card">
+                    <h4>Beginner Drone Kit</h4>
+                    <p>Everything you need in one kit</p>
+                    <a href="https://your-affiliate-link-here" target="_blank" rel="noopener noreferrer">Shop Now</a>
+                </div>
+                
+                <div class="shop-card">
+                    <h4>FPV Goggles</h4>
+                    <p>Quality goggles for immersive flying</p>
+                    <a href="https://your-affiliate-link-here" target="_blank" rel="noopener noreferrer">Shop Now</a>
+                </div>
+                
+                <div class="shop-card">
+                    <h4>Radio Transmitter</h4>
+                    <p>Reliable controller for all flights</p>
+                    <a href="https://your-affiliate-link-here" target="_blank" rel="noopener noreferrer">Shop Now</a>
+                </div>
+                
+                <div class="shop-card">
+                    <h4>Beginner Battery Set</h4>
+                    <p>Safe, reliable starter batteries</p>
+                    <a href="https://your-affiliate-link-here" target="_blank" rel="noopener noreferrer">Shop Now</a>
+                </div>
+            </div>
+
+            <h3>Essentials</h3>
+            <p>Gear you need to have for safe flying and charging.</p>
+            <div class="shop-grid">
+                <div class="shop-card">
+                    <h4>LiPo Charger</h4>
+                    <p>Safe, fast battery charging</p>
+                    <a href="https://your-affiliate-link-here" target="_blank" rel="noopener noreferrer">Shop Now</a>
+                </div>
+                
+                <div class="shop-card">
+                    <h4>Parallel Charger</h4>
+                    <p>Charge multiple packs at once</p>
+                    <a href="https://your-affiliate-link-here" target="_blank" rel="noopener noreferrer">Shop Now</a>
+                </div>
+                
+                <div class="shop-card">
+                    <h4>LiPo Storage Bag</h4>
+                    <p>Safe storage for your batteries</p>
+                    <a href="https://your-affiliate-link-here" target="_blank" rel="noopener noreferrer">Shop Now</a>
+                </div>
+                
+                <div class="shop-card">
+                    <h4>Battery Balance Charger</h4>
+                    <p>Professional battery maintenance</p>
+                    <a href="https://your-affiliate-link-here" target="_blank" rel="noopener noreferrer">Shop Now</a>
+                </div>
             </div>
         </div>
 
@@ -654,7 +788,16 @@
                 const minVoltage = Math.min(...group.packs.map(p => p.voltage));
                 const maxVoltage = Math.max(...group.packs.map(p => p.voltage));
                 const deltaInGroup = (maxVoltage - minVoltage).toFixed(3);
-                const colorClass = `color-${index % 8}`;
+                
+                // Check if group has any problem packs
+                const hasProblems = group.packs.some(p => p.status !== 'safe');
+                let colorClass = 'color-0'; // red for problems
+                
+                if (!hasProblems) {
+                    // Only use other colors if no problems
+                    const colorIndex = index % 7 + 1; // Use colors 1-7, skip 0 (red)
+                    colorClass = `color-${colorIndex}`;
+                }
 
                 html += `
                     <div class="group-card ${colorClass}">
